@@ -1,0 +1,21 @@
+{% extends 'wisdom_app/base.html' %}
+
+{% block title %}Home - Wisdom Connect{% endblock %}
+
+{% block content %}
+    <h1>Latest Experiences</h1>
+    {% if experiences %}
+        {% for experience in experiences %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{% url 'wisdom_app:experience_detail' experience.pk %}">{{ experience.title }}</a></h5>
+                    <h6 class="card-subtitle mb-2 text-muted">by <a href="{% url 'wisdom_app:profile' experience.user.username %}">{{ experience.user.username }}</a> on {{ experience.created_at|date:"F d, Y" }}</h6>
+                    <p class="card-text">{{ experience.content|truncatewords:50 }}</p>
+                    <a href="{% url 'wisdom_app:experience_detail' experience.pk %}" class="btn btn-primary btn-sm">Read More</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No experiences shared yet. Be the first!</p>
+    {% endif %}
+{% endblock %} 

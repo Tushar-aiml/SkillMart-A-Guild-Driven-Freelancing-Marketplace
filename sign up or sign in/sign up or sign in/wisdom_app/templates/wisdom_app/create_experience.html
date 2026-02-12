@@ -1,0 +1,21 @@
+{% extends 'wisdom_app/base.html' %}
+
+{% block title %}Share Experience - Wisdom Connect{% endblock %}
+
+{% block content %}
+    <h1>Share Your Work-Life Experience</h1>
+    <form method="post">
+        {% csrf_token %}
+        <!-- Form fields (title, content) will go here -->
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">Your Story</label>
+            <textarea class="form-control" id="content" name="content" rows="10" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Experience</button>
+    </form>
+    <p class="mt-3">Note: Form submission logic needs to be implemented in the view.</p>
+{% endblock %} 

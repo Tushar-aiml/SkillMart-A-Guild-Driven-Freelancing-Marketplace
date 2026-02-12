@@ -1,0 +1,5 @@
+Django>=4.0,<5.0
+# Add other dependencies as needed, e.g.:
+# psycopg2-binary # For PostgreSQL
+# python-decouple # For environment variables
+# gunicorn # For deployment 

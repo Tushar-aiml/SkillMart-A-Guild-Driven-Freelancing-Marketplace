@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="sm-dashboard">
+  <header class="sm-dashboard-header">
+    <div>
+      <h2>Hello, {{ profile.user.username }}</h2>
+      <p>Choose how you want to use Skill Mart today.</p>
+    </div>
+  </header>
+  <div class="sm-dashboard-section sm-dashboard-switch">
+    <a href="{% url 'marketplace:client_dashboard' %}" class="sm-card sm-dashboard-switch-card">
+      <h3>Client space</h3>
+      <p>Post quests, manage work, and confirm payments.</p>
+    </a>
+    <a href="{% url 'marketplace:worker_dashboard' %}" class="sm-card sm-dashboard-switch-card">
+      <h3>Service provider space</h3>
+      <p>Accept quests, earn EXP, and climb the ranks.</p>
+    </a>
+  </div>
+
+  <div class="sm-dashboard-grid">
+    <div class="sm-card sm-profile-summary">
+      <h3>Your profile</h3>
+      <p><strong>Username:</strong> {{ profile.user.username }}</p>
+      <p><strong>Role:</strong> {{ profile.role }}</p>
+      <p><strong>Service type:</strong> {{ profile.service_type|default:'Not set' }}</p>
+      <p><strong>Location:</strong> {{ profile.location|default:'—' }}</p>
+      <p><strong>Skills:</strong> {{ profile.skills|default:'—' }}</p>
+      <p class="sm-profile-bio">{{ profile.bio|default:'No bio yet.' }}</p>
+
+      <div class="sm-profile-stats">
+        <div class="sm-stat-card">
+          <div class="sm-stat-number">{{ profile.completed_quests }}</div>
+          <div class="sm-stat-label">Quests</div>
+        </div>
+        <div class="sm-stat-card">
+          <div class="sm-stat-number">{{ profile.rank }}</div>
+          <div class="sm-stat-label">Rank</div>
+        </div>
+        <div class="sm-stat-card">
+          <div class="sm-stat-number">{{ profile.exp }}</div>
+          <div class="sm-stat-label">EXP</div>
+        </div>
+      </div>
+
+      <div class="sm-progress-wrap">
+        <label>Progress to next rank</label>
+        <div class="sm-progress" aria-hidden="true">
+          <i style="width: {{ profile.exp|default:0|floatformat:0 }}%;"></i>
+        </div>
+      </div>
+
+      <div class="sm-quick-actions">
+        <a class="sm-quick" href="{% url 'marketplace:quest_create' %}">Create Quest</a>
+        <a class="sm-quick" href="{% url 'marketplace:quest_list' %}">Browse Quests</a>
+        <a class="sm-quick" href="{% url 'accounts:profile' %}">Edit Profile</a>
+      </div>
+    </div>
+
+    <div class="sm-card sm-dashboard-activity">
+      <h3>Overview & recent</h3>
+      <div class="sm-stats-grid">
+        <div class="sm-stat-card" style="margin-bottom:0.8rem;">
+          <div class="sm-stat-number">$0</div>
+          <div class="sm-stat-label">Earnings</div>
+        </div>
+        <div class="sm-stat-card" style="margin-bottom:0.8rem;">
+          <div class="sm-stat-number">0</div>
+          <div class="sm-stat-label">Open quests</div>
+        </div>
+      </div>
+
+      <section class="sm-recent-activity">
+        <h4>Recent activity</h4>
+        <ul>
+          <li>No recent activity to show. Start by creating or accepting a quest.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

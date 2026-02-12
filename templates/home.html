@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="sm-hero">
+  <div class="sm-hero-text">
+    <h1>Hire skills. Complete quests. Level up.</h1>
+    <p>
+      Skill Mart connects clients with skilled workers for both physical and
+      virtual work. Post quests, gain EXP, and climb the ranks.
+    </p>
+    <div class="sm-hero-actions">
+      <a href="{% url 'accounts:register' %}" class="sm-btn sm-btn-primary">
+        Get Started
+      </a>
+      <a href="{% url 'marketplace:quest_list' %}" class="sm-btn sm-btn-ghost">
+        Browse Quests
+      </a>
+    </div>
+  </div>
+  <div class="sm-hero-grid">
+    <div class="sm-card">
+      <h3>Physical Work</h3>
+      <p>Find plumbers, electricians, carpenters, mechanics, and more.</p>
+    </div>
+    <div class="sm-card">
+      <h3>Virtual Work</h3>
+      <p>Hire developers, designers, writers, and digital experts.</p>
+    </div>
+    <div class="sm-card">
+      <h3>Rank &amp; EXP</h3>
+      <p>Complete quests to earn EXP and unlock higher ranks.</p>
+    </div>
+    <div class="sm-card">
+      <h3>Premium Boost</h3>
+      <p>Go premium for unlimited quests and faster progression.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sm-home-stats">
+  <div class="sm-home-stat">
+    <span class="sm-home-stat-number">5K+</span>
+    <span class="sm-home-stat-label">Verified workers</span>
+  </div>
+  <div class="sm-home-stat">
+    <span class="sm-home-stat-number">12K+</span>
+    <span class="sm-home-stat-label">Quests completed</span>
+  </div>
+  <div class="sm-home-stat">
+    <span class="sm-home-stat-number">4.9★</span>
+    <span class="sm-home-stat-label">Average worker rating</span>
+  </div>
+</section>
+
+<section class="sm-home-steps">
+  <div class="sm-home-steps-card">
+    <h2>For clients</h2>
+    <ol>
+      <li><strong>Post a quest</strong> with your budget and requirements.</li>
+      <li><strong>Pick a worker</strong> by rank, EXP, and reviews.</li>
+      <li><strong>Pay after completion</strong> and leave a review.</li>
+    </ol>
+  </div>
+  <div class="sm-home-steps-card">
+    <h2>For workers</h2>
+    <ol>
+      <li><strong>Set up your profile</strong> with skills and location.</li>
+      <li><strong>Accept quests</strong> that match your talents.</li>
+      <li><strong>Earn EXP &amp; rank up</strong> to unlock more visibility.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="sm-home-categories">
+  <h2>Popular categories</h2>
+  <div class="sm-home-category-grid">
+    <button class="sm-chip">Plumbing</button>
+    <button class="sm-chip">Electrical</button>
+    <button class="sm-chip">Carpentry</button>
+    <button class="sm-chip">Mechanic</button>
+    <button class="sm-chip">Web Development</button>
+    <button class="sm-chip">UI/UX Design</button>
+    <button class="sm-chip">Graphic Design</button>
+    <button class="sm-chip">Content Writing</button>
+  </div>
+</section>
+
+<section class="sm-home-legal">
+  <p>
+    &copy; 2026 Skill Mart<span class="sm-trademark">™</span>. All rights reserved.
+    Skill Mart<span class="sm-trademark">™</span> and the Skill Mart logo are trademarks of their respective owner.
+  </p>
+</section>
+{% endblock %}
+

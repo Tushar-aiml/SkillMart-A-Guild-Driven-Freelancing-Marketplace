@@ -1,0 +1,17 @@
+/* Basic styles for Wisdom Connect */
+body {
+    padding-top: 56px; /* Adjust based on navbar height */
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 960px;
+}
+
+footer {
+    margin-top: 3rem;
+}
+
+.card {
+    margin-bottom: 1.5rem;
+} 

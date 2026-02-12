@@ -1,0 +1,22 @@
+{% extends 'wisdom_app/base.html' %}
+
+{% block title %}Profile: {{ username }} - Wisdom Connect{% endblock %}
+
+{% block content %}
+    <h1>Profile: {{ username }}</h1>
+    <!-- Profile details (age, profession, bio) will go here -->
+    <p>Profile details (age, profession, bio) will be added soon.</p>
+
+    <h2>Experiences Shared by {{ username }}</h2>
+    <!-- List of user's experiences will go here -->
+    <p>List of experiences shared by this user will be added soon.</p>
+
+    <h2>Connections</h2>
+    <!-- User's connection list will go here -->
+    <p>User's connections will be listed here soon.</p>
+
+    {% if user.is_authenticated and user.username != username %}
+        <!-- Add Connection Request Button Here -->
+        <button class="btn btn-secondary">Send Connection Request (Not implemented)</button>
+    {% endif %}
+{% endblock %} 

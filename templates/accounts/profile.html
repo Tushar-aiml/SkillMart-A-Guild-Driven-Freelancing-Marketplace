@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<section class="sm-profile">
+  <h2>Your Profile</h2>
+  <div class="sm-profile-grid">
+    <div>
+      <p><strong>Username:</strong> {{ profile.user.username }}</p>
+      <p><strong>Mode:</strong> Client &amp; Service Provider</p>
+      <p><strong>Rank:</strong> {{ profile.rank }}</p>
+      <p><strong>EXP:</strong> {{ profile.exp }}</p>
+      <p><strong>Completed Quests:</strong> {{ profile.completed_quests }}</p>
+      <p>
+        <strong>Premium:</strong>
+        {% if profile.is_premium %}Active{% else %}Free (3 quest limit){% endif %}
+      </p>
+    </div>
+    <form method="post" class="sm-form sm-profile-form">
+      {% csrf_token %}
+      <div class="sm-form-group">
+        <label for="skills">Skills (comma separated)</label>
+        <input
+          type="text"
+          id="skills"
+          name="skills"
+          value="{{ profile.skills }}"
+        />
+      </div>
+      <div class="sm-form-group">
+        <label for="location">Location (Exact Address)</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input
+            type="text"
+            id="location"
+            name="location"
+            placeholder="e.g., 123 Main St, San Francisco, CA 94105, United States"
+            value="{{ profile.location }}"
+          />
+          <button type="button" id="geolocateBtn" class="sm-btn sm-btn-small" style="flex-shrink: 0;">📍 Get My Address</button>
+        </div>
+        <small id="geoStatus" style="color: var(--sm-muted); margin-top: 0.2rem; display: block;"></small>
+        <div id="coordsDisplay" style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.02); border-radius: 8px; font-size: 0.85rem; color: #cbd5f5; display: none;"></div>
+      </div>
+      <div class="sm-form-group">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio" rows="4">{{ profile.bio }}</textarea>
+      </div>
+      <div class="sm-form-group">
+        <label for="service_type">Service Type</label>
+        <select id="service_type" name="service_type">
+          <option value="physical" {% if profile.service_type == 'physical' %}selected{% endif %}>
+            Physical
+          </option>
+          <option value="virtual" {% if profile.service_type == 'virtual' %}selected{% endif %}>
+            Virtual
+          </option>
+        </select>
+      </div>
+      <button type="submit" class="sm-btn sm-btn-primary">Save Changes</button>
+    </form>
+  </div>
+</section>
+
+<script>
+document.getElementById('geolocateBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  const btn = this;
+  const status = document.getElementById('geoStatus');
+  const coordsDisplay = document.getElementById('coordsDisplay');
+  const input = document.getElementById('location');
+  
+  btn.disabled = true;
+  btn.textContent = '⏳ Detecting...';
+  status.textContent = 'Getting your location...';
+  status.style.color = 'var(--sm-muted)';
+  coordsDisplay.style.display = 'none';
+  
+  if (!navigator.geolocation) {
+    status.textContent = '❌ Geolocation not supported by your browser';
+    status.style.color = '#ef4444';
+    btn.disabled = false;
+    btn.textContent = '📍 Get My Address';
+    return;
+  }
+  
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+      
+      status.textContent = 'Converting coordinates to address...';
+      
+      // Use Open Street Map Nominatim for reverse geocoding
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=18&addressdetails=1`)
+        .then(response => response.json())
+        .then(data => {
+          // Get the full formatted address
+          const address = data.address || {};
+          const addressLines = [];
+          
+          // Build address from components like house number, street, city, etc.
+          if (address.house_number && address.road) {
+            addressLines.push(`${address.house_number} ${address.road}`);
+          } else if (address.road) {
+            addressLines.push(address.road);
+          }
+          
+          if (address.city || address.town || address.village) {
+            addressLines.push(address.city || address.town || address.village);
+          }
+          
+          if (address.state) {
+            addressLines.push(address.state);
+          }
+          
+          if (address.postcode) {
+            addressLines.push(address.postcode);
+          }
+          
+          if (address.country) {
+            addressLines.push(address.country);
+          }
+          
+          const fullAddress = addressLines.join(', ');
+          
+          if (fullAddress) {
+            input.value = fullAddress;
+            status.textContent = '✅ Location detected';
+            status.style.color = '#22c55e';
+          } else {
+            // Fallback to display name if address parsing fails
+            input.value = data.display_name || `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+            status.textContent = '✅ Location set';
+            status.style.color = '#22c55e';
+          }
+          
+          // Display detailed info
+          coordsDisplay.innerHTML = `
+            <strong>Coordinates:</strong> ${lat.toFixed(6)}°, ${lon.toFixed(6)}°<br/>
+            <strong>Accuracy:</strong> ±${accuracy.toFixed(0)}m
+          `;
+          coordsDisplay.style.display = 'block';
+        })
+        .catch(error => {
+          // If geocoding fails, show coordinates
+          input.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+          status.textContent = '⚠️ Using coordinates (geocoding unavailable)';
+          status.style.color = '#f59e0b';
+          coordsDisplay.innerHTML = `
+            <strong>Coordinates:</strong> ${lat.toFixed(6)}°, ${lon.toFixed(6)}°<br/>
+            <strong>Accuracy:</strong> ±${accuracy.toFixed(0)}m
+          `;
+          coordsDisplay.style.display = 'block';
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = '📍 Get My Address';
+        });
+    },
+    function(error) {
+      let msg = '❌ Could not get location';
+      if (error.code === 1) msg = '❌ Permission denied. Enable location in browser settings.';
+      if (error.code === 2) msg = '❌ Position unavailable';
+      if (error.code === 3) msg = '❌ Request timed out';
+      
+      status.textContent = msg;
+      status.style.color = '#ef4444';
+      coordsDisplay.style.display = 'none';
+      btn.disabled = false;
+      btn.textContent = '📍 Get My Address';
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+});
+</script>
+{% endblock %}
+

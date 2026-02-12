@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Skill Mart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="signin-signup">
+            <form method="post" action="{% url 'accounts:login' %}" class="sign-in-form">
+                {% csrf_token %}
+                <h2 class="title">Sign in</h2>
+                
+                {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+                
+                <div class="input-field">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="username" placeholder="Username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required>
+                </div>
+                <div class="input-field">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
+                </div>
+                <input type="submit" value="Login" class="btn">
+                <p class="social-text">Or continue with</p>
+                <div class="social-media">
+                    <a href="#" class="social-icon">
+                        <i class="fab fa-google"></i>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                </div>
+                <p class="account-text">Don't have an account? <a href="{% url 'accounts:register' %}" id="sign-up-btn2">Sign up</a></p>
+            </form>
+
+            <form method="post" action="{% url 'accounts:register' %}" class="sign-up-form">
+                {% csrf_token %}
+                <h2 class="title">Sign up</h2>
+                
+                <div class="input-field">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="username" placeholder="Username" maxlength="150" required>
+                </div>
+                <div class="input-field">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="input-field">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password1" placeholder="Password" required>
+                </div>
+                <div class="input-field">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password2" placeholder="Confirm Password" required>
+                </div>
+                <input type="submit" value="Sign up" class="btn">
+                <p class="social-text">Or sign up with</p>
+                <div class="social-media">
+                    <a href="#" class="social-icon">
+                        <i class="fab fa-google"></i>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                </div>
+                <p class="account-text">Already have an account? <a href="{% url 'accounts:login' %}" id="sign-in-btn2">Sign in</a></p>
+            </form>
+        </div>
+        <div class="panels-container">
+            <div class="panel left-panel">
+                <div class="content">
+                    <h3>SKILL MART</h3>
+                    <p>Your marketplace for skills and expertise</p>
+                    <button class="btn" id="sign-in-btn" type="button">Sign in</button>
+                </div>
+            </div>
+            <div class="panel right-panel">
+                <div class="content">
+                    <h3>SKILL MART</h3>
+                    <p>Your marketplace for skills and expertise</p>
+                    <button class="btn" id="sign-up-btn" type="button">Sign up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/auth.js' %}"></script>
+</body>
+</html>
+

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load currency_filters %}
+{% block title %}Worker Dashboard{% endblock %}
+
+{% block content %}
+<section class="sm-dashboard">
+  <header class="sm-dashboard-header">
+    <div>
+      <h2>Welcome, {{ profile.user.username }}</h2>
+      <p>
+        Rank: <strong>{{ profile.rank }}</strong> • EXP:
+        <strong>{{ profile.exp }}</strong> • Completed:
+        <strong>{{ profile.completed_quests }}</strong>
+      </p>
+      <p>
+        {% if profile.is_premium %}
+        <span class="sm-badge sm-badge-premium">Premium</span> Unlimited quests and faster EXP.
+        {% else %}
+        <span class="sm-badge sm-badge-muted">Free</span>
+        Quests completed: {{ profile.completed_quests }}/3. Upgrade to premium for unlimited quests.
+        {% endif %}
+      </p>
+    </div>
+  </header>
+
+  <div class="sm-dashboard-section">
+    <h3>Assigned Quests</h3>
+    <div class="sm-grid">
+      {% for quest in assigned_quests %}
+      <article class="sm-card sm-quest-card" data-quest-id="{{ quest.id }}">
+        <h4>{{ quest.title }}</h4>
+        <p class="sm-quest-meta">
+          {{ quest.get_service_type_display }} • {{ quest.location|default:"Remote" }}
+        </p>
+        <p class="sm-quest-price">{{ quest.price|rupees }}</p>
+        <p class="sm-badge sm-badge-{{ quest.status }}">{{ quest.get_status_display }}</p>
+        {% if quest.status == 'assigned' %}
+        <button
+          class="sm-btn sm-btn-small sm-btn-primary js-complete-quest"
+          data-quest-id="{{ quest.id }}"
+        >
+          Mark Completed
+        </button>
+        {% elif quest.status == 'completed' and quest.payment %}
+        <p>Awaiting client payment confirmation.</p>
+        {% endif %}
+      </article>
+      {% empty %}
+      <p>You have no assigned quests.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="sm-dashboard-section">
+    <h3>Open Quests</h3>
+    <div class="sm-grid">
+      {% for quest in open_quests %}
+      <article class="sm-card sm-quest-card">
+        <h4>{{ quest.title }}</h4>
+        <p class="sm-quest-meta">
+          {{ quest.get_service_type_display }} • {{ quest.location|default:"Remote" }}
+        </p>
+        <p class="sm-quest-price">{{ quest.price|rupees }}</p>
+        <a
+          href="{% url 'marketplace:quest_detail' quest.pk %}"
+          class="sm-btn sm-btn-small sm-btn-ghost"
+          >View &amp; Accept</a
+        >
+      </article>
+      {% empty %}
+      <p>No open quests matching your profile yet. Check back soon.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% block extra_js %}
+<script>
+  (function () {
+    const buttons = document.querySelectorAll(".js-complete-quest");
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const questId = btn.dataset.questId;
+        const url = `/marketplace/api/quests/${questId}/complete/`;
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": window.SkillMart.csrfToken(),
+          },
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          alert(data.message + ` Rank: ${data.worker_rank}, EXP: ${data.worker_exp}`);
+          window.location.reload();
+        } else {
+          alert(data.error || "Unable to complete quest.");
+        }
+      });
+    });
+  })();
+</script>
+{% endblock %}
+{% endblock %}
+

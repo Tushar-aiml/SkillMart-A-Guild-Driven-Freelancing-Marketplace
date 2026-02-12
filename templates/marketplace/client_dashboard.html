@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load currency_filters %}
+{% block title %}Client Dashboard{% endblock %}
+
+{% block content %}
+<section class="sm-dashboard">
+  <header class="sm-dashboard-header">
+    <div>
+      <h2>Welcome, {{ profile.user.username }}</h2>
+      <p>Post quests and manage your projects in one place.</p>
+    </div>
+    <a href="{% url 'marketplace:quest_create' %}" class="sm-btn sm-btn-primary">
+      Post New Quest
+    </a>
+  </header>
+  <div class="sm-dashboard-section">
+    <div class="sm-client-stats">
+      <div class="sm-card sm-client-stat-card">
+        <span class="sm-client-stat-label">Total quests</span>
+        <span class="sm-client-stat-number">{{ total_quests }}</span>
+      </div>
+      <div class="sm-card sm-client-stat-card">
+        <span class="sm-client-stat-label">Open</span>
+        <span class="sm-client-stat-number">{{ open_quests }}</span>
+      </div>
+      <div class="sm-card sm-client-stat-card">
+        <span class="sm-client-stat-label">In progress</span>
+        <span class="sm-client-stat-number">{{ in_progress }}</span>
+      </div>
+      <div class="sm-card sm-client-stat-card">
+        <span class="sm-client-stat-label">Completed / Paid</span>
+        <span class="sm-client-stat-number">{{ completed }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sm-dashboard-section">
+    <h3>Your recent quests</h3>
+    <div class="sm-client-quests-table-wrapper">
+      <table class="sm-client-quests-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Worker</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for quest in quests %}
+          <tr>
+            <td>{{ quest.title }}</td>
+            <td>{{ quest.get_service_type_display }}</td>
+            <td>{{ quest.location|default:"Remote" }}</td>
+            <td>{{ quest.price|rupees }}</td>
+            <td>{{ quest.get_status_display }}</td>
+            <td>{% if quest.worker %}{{ quest.worker.username }}{% else %}-{% endif %}</td>
+            <td>
+              <a href="{% url 'marketplace:quest_detail' quest.pk %}" class="sm-link">
+                View
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7">You haven't posted any quests yet. Get started above.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sm-dashboard-section">
+    <h3>Tips to get better results</h3>
+    <div class="sm-home-steps sm-client-tips">
+      <div class="sm-home-steps-card">
+        <h2>Write clear quests</h2>
+        <ol>
+          <li><strong>Describe the problem</strong> in 2–3 short sentences.</li>
+          <li><strong>Add budget &amp; deadline</strong> so workers can plan properly.</li>
+          <li><strong>Mention tools or skills</strong> you expect them to use.</li>
+        </ol>
+      </div>
+      <div class="sm-home-steps-card">
+        <h2>Pick the right worker</h2>
+        <ol>
+          <li><strong>Check rank &amp; EXP</strong> to see real experience.</li>
+          <li><strong>Read reviews</strong> from other clients before assigning.</li>
+          <li><strong>Start small</strong> with a test quest if you’re unsure.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

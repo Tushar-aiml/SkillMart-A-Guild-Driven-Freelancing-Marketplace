@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load currency_filters %}
+{% block title %}Quest Details{% endblock %}
+
+{% block content %}
+<article class="sm-quest-detail" data-quest-id="{{ quest.id }}">
+  <header>
+    <h2>{{ quest.title }}</h2>
+    <p class="sm-quest-meta">
+      {{ quest.get_service_type_display }} • {{ quest.location|default:"Remote" }} •
+      <span class="sm-badge sm-badge-{{ quest.status }}">{{ quest.get_status_display }}</span>
+    </p>
+  </header>
+  <p class="sm-quest-price sm-quest-price-large">{{ quest.price|rupees }}</p>
+  <section class="sm-quest-section">
+    <h3>Description</h3>
+    <p>{{ quest.description }}</p>
+  </section>
+
+  {% if quest.rating %}
+  <section class="sm-quest-section">
+    <h3>Client Review</h3>
+    <p>Rating: {{ quest.rating }} / 5</p>
+    <p>{{ quest.review }}</p>
+  </section>
+  {% endif %}
+
+  <section class="sm-quest-section">
+    {% if can_accept %}
+    <button
+      class="sm-btn sm-btn-primary js-accept-quest"
+      data-quest-id="{{ quest.id }}"
+    >
+      Accept Quest
+    </button>
+    {% elif not profile.can_accept_more_quests %}
+    <p>
+      You have reached the free quest limit (3). Upgrade to premium to accept
+      more quests.
+    </p>
+    {% endif %}
+    {% if quest.client == profile.user %}
+    {% if quest.status == 'completed' and quest.payment %}
+    <button
+      class="sm-btn sm-btn-primary js-confirm-payment"
+      data-payment-id="{{ quest.payment.id }}"
+    >
+      Confirm Payment
+    </button>
+    <form class="sm-form sm-review-form">
+      {% csrf_token %}
+      <h3>Rate this quest</h3>
+      <div class="sm-form-group">
+        <label for="rating">Rating (1–5)</label>
+        <input id="rating" name="rating" type="number" min="1" max="5" required />
+      </div>
+      <div class="sm-form-group">
+        <label for="review">Review</label>
+        <textarea id="review" name="review" rows="3" required></textarea>
+      </div>
+      <button type="submit" class="sm-btn sm-btn-ghost">Submit Review</button>
+    </form>
+    {% endif %}
+    {% endif %}
+  </section>
+</article>
+
+{% block extra_js %}
+<script>
+  (function () {
+    const questId = document
+      .querySelector(".sm-quest-detail")
+      .getAttribute("data-quest-id");
+
+    const acceptBtn = document.querySelector(".js-accept-quest");
+    if (acceptBtn) {
+      acceptBtn.addEventListener("click", async () => {
+        const url = `/marketplace/api/quests/${questId}/accept/`;
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": window.SkillMart.csrfToken(),
+          },
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          alert(data.message);
+          window.location.reload();
+        } else {
+          alert(data.error || "Unable to accept quest.");
+        }
+      });
+    }
+
+    const paymentBtn = document.querySelector(".js-confirm-payment");
+    if (paymentBtn) {
+      paymentBtn.addEventListener("click", async () => {
+        const paymentId = paymentBtn.dataset.paymentId;
+        const url = `/payments/api/payments/${paymentId}/confirm/`;
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": window.SkillMart.csrfToken(),
+          },
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          alert(data.message);
+          window.location.reload();
+        } else {
+          alert(data.error || "Unable to confirm payment.");
+        }
+      });
+    }
+
+    const reviewForm = document.querySelector(".sm-review-form");
+    if (reviewForm) {
+      reviewForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(reviewForm);
+        const url = `/marketplace/api/quests/${questId}/review/`;
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: { "X-CSRFToken": window.SkillMart.csrfToken() },
+          body: formData,
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          alert(data.message);
+          window.location.reload();
+        } else {
+          alert(data.error || "Unable to submit review.");
+        }
+      });
+    }
+  })();
+</script>
+{% endblock %}
+{% endblock %}
+

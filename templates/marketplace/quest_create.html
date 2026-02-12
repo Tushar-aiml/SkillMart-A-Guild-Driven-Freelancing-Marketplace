@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load currency_filters %}
+{% block title %}Post Quest{% endblock %}
+
+{% block content %}
+<section class="sm-form-page">
+  <h2>Post a New Quest</h2>
+  <form method="post" class="sm-form">
+    {% csrf_token %}
+    <div class="sm-form-group">
+      <label for="title">Title</label>
+      <input id="title" name="title" type="text" required />
+    </div>
+    <div class="sm-form-group">
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4" required></textarea>
+    </div>
+    <div class="sm-form-grid">
+      <div class="sm-form-group">
+        <label for="category">Category</label>
+        <input id="category" name="category" type="text" placeholder="Plumbing, Design, Writing..." />
+      </div>
+      <div class="sm-form-group">
+        <label for="service_type">Service Type</label>
+        <select id="service_type" name="service_type" required>
+          <option value="">Select</option>
+          <option value="physical">Physical</option>
+          <option value="virtual">Virtual</option>
+        </select>
+      </div>
+    </div>
+    <div class="sm-form-grid">
+      <div class="sm-form-group">
+        <label for="location">Location</label>
+        <input id="location" name="location" type="text" placeholder="City or Remote" />
+      </div>
+      <div class="sm-form-group">
+        <label for="price">Budget (₹)</label>
+        <input id="price" name="price" type="number" step="0.01" placeholder="Enter amount in rupees" required />
+      </div>
+    </div>
+    <button type="submit" class="sm-btn sm-btn-primary">Create Quest</button>
+  </form>
+</section>
+{% endblock %}
+

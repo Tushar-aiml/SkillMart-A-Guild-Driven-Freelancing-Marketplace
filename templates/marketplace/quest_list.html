@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load currency_filters %}
+{% block title %}Browse Quests{% endblock %}
+
+{% block content %}
+<section class="sm-listing">
+  <header class="sm-listing-header">
+    <h2>Browse Quests</h2>
+    <form method="get" class="sm-filter-bar">
+      <input type="text" name="q" placeholder="Search by title or description" value="{{ request.GET.q }}" />
+      <input type="text" name="location" placeholder="Location" value="{{ request.GET.location }}" />
+      <select name="service_type">
+        <option value="">All Types</option>
+        <option value="physical" {% if request.GET.service_type == 'physical' %}selected{% endif %}>
+          Physical
+        </option>
+        <option value="virtual" {% if request.GET.service_type == 'virtual' %}selected{% endif %}>
+          Virtual
+        </option>
+      </select>
+      <input type="number" step="0.01" name="min_price" placeholder="Min ₹" value="{{ request.GET.min_price }}" />
+      <input type="number" step="0.01" name="max_price" placeholder="Max ₹" value="{{ request.GET.max_price }}" />
+      <button type="submit" class="sm-btn sm-btn-small sm-btn-primary">Filter</button>
+    </form>
+  </header>
+  <div class="sm-grid">
+    {% for quest in quests %}
+    <article class="sm-card sm-quest-card">
+      <h4>{{ quest.title }}</h4>
+      <p class="sm-quest-meta">
+        {{ quest.get_service_type_display }} • {{ quest.location|default:"Remote" }}
+      </p>
+      <p class="sm-quest-price">{{ quest.price|rupees }}</p>
+      <a href="{% url 'marketplace:quest_detail' quest.pk %}" class="sm-btn sm-btn-small sm-btn-ghost">
+        View Details
+      </a>
+    </article>
+    {% empty %}
+    <p>No quests found. Try adjusting your filters.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
